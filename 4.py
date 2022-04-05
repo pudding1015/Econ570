@@ -20,21 +20,21 @@ Yb_list = []
 for mc_replication in range(sample_size):
     X = np.random.uniform(0, 1, n)
     e = np.random.normal(0,1,n)
-    Ya = a + b * X + e
-    mod = sm.OLS(Ya, sm.add_constant(X))
+    Y = a + b * X + e
+    mod = sm.OLS(Y, sm.add_constant(X))
     res = mod.fit()
     slope_estimates = slope_estimates + [res.params[1]]
     bias_estimates = bias_estimates + [res.params[0]]
     X_list.extend(X)
-    Ya_list.extend(Ya)
+    Ya_list.extend(Y)
 
-df = pd.DataFrame({'X':X,'Ya':Ya})
+df = pd.DataFrame({'X':X,'Y':Y})
 df.to_csv("./data/4.csv", index=None) 
 
 print('slope_estimate:',np.mean(slope_estimates))
 print('bias_estimate:',np.mean(bias_estimates))
-sum = 0
-for i in range(len(slope_estimates)):
-    sum+=(slope_estimates[i]-b)**2
-RMSE = np.sqrt(sum/100)
-print('RMSE_slope:',RMSE)
+b0 = b*np.ones([100,1])
+temp = slope_estimates- b0
+bias = np.mean(temp)
+rmse = np.sqrt(np.mean(temp**2))
+print('RMSE:',rmse,'bias:',bias)
